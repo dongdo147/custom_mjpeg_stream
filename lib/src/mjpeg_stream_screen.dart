@@ -20,7 +20,7 @@ class MJPEGStreamScreen extends StatefulWidget {
   final bool showWatermark;
   final String watermarkText;
   final Widget? watermarkWidget;
-  final bool showLiveIcon;
+
 
   final bool blurSensitiveContent;
 
@@ -39,7 +39,7 @@ class MJPEGStreamScreen extends StatefulWidget {
     this.showWatermark = false,
     this.watermarkText = "MOKZ Studio",
     this.watermarkWidget,
-    required this.showLiveIcon,
+   
     this.blurSensitiveContent = false,
   });
 
@@ -53,7 +53,7 @@ class _MJPEGStreamScreenState extends State<MJPEGStreamScreen> {
   ValueNotifier<MemoryImage?> image = ValueNotifier<MemoryImage?>(null);
   ValueNotifier<List<dynamic>?> errorState =
       ValueNotifier<List<dynamic>?>(null);
-  ValueNotifier<bool> showLiveIcon = ValueNotifier<bool>(false);
+
   ValueNotifier<bool> showLodingIndicator = ValueNotifier<bool>(true);
   ValueNotifier<bool> blurSensitiveContent =
       ValueNotifier<bool>(false); // Add blur state
@@ -87,7 +87,7 @@ class _MJPEGStreamScreenState extends State<MJPEGStreamScreen> {
 
       if (response.statusCode >= 200 && response.statusCode < 300) {
         if (widget.showLogs) print("Stream started successfully.");
-        showLiveIcon.value = true;
+     
         showLodingIndicator.value = false;
         List<int> _carry = [];
         _subscription = response.stream.listen((chunk) {
@@ -118,7 +118,7 @@ class _MJPEGStreamScreenState extends State<MJPEGStreamScreen> {
           if (widget.showLogs) print("Stream error: $error");
           errorState.value = [error, stack];
           image.value = null;
-          showLiveIcon.value = false;
+      
           showLodingIndicator.value = false;
         }, cancelOnError: true);
       } else {
@@ -128,14 +128,14 @@ class _MJPEGStreamScreenState extends State<MJPEGStreamScreen> {
           HttpException('Stream returned ${response.statusCode} status')
         ];
         image.value = null;
-        showLiveIcon.value = false;
+    
         showLodingIndicator.value = false;
       }
     } catch (error, stack) {
       if (widget.showLogs) print("Error during HTTP request: $error");
       errorState.value = [error, stack];
       image.value = null;
-      showLiveIcon.value = false;
+    
       showLodingIndicator.value = false;
     }
   }
@@ -143,7 +143,7 @@ class _MJPEGStreamScreenState extends State<MJPEGStreamScreen> {
   void _reloadStream() {
     errorState.value = null;
     image.value = null;
-    showLiveIcon.value = true;
+   
     showLodingIndicator.value = true;
     if (widget.showLogs) print("Reloading stream...");
     _startStream();
@@ -315,34 +315,7 @@ void _sendImage(List<int> chunks) {
               return SizedBox.shrink();
             },
           ),
-          ValueListenableBuilder<bool>(
-            valueListenable: showLiveIcon,
-            builder: (context, showLive, child) {
-              if (showLive) {
-                return Positioned(
-                  top: 10,
-                  right: 10,
-                  child: Container(
-                    padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-                    decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 244, 67, 54),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      'LIVE',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                    // child: Center(child: Icon(Icons.live_tv_rounded,color: Colors.white,size: 25,)),
-                  ),
-                );
-              }
-              return SizedBox();
-            },
-          ),
+       
           if (widget.showWatermark)
             Positioned(
               bottom: 10,
@@ -357,23 +330,7 @@ void _sendImage(List<int> chunks) {
                     ),
                   ),
             ),
-          // if (widget.blurSensitiveContent)
-          //   Positioned(
-          //     bottom: 15,
-          //     left: 15,
-          //     child: CupertinoButton(
-          //       onPressed: _toggleBlur,
-          //       child: Icon(
-          //         blurSensitiveContent.value
-          //             ? Icons.visibility_off
-          //             : Icons.visibility,
-          //         color: Colors.white,
-          //       ),
-          //       padding: EdgeInsets.all(10),
-          //       color: Colors.black.withOpacity(0.5),
-          //       borderRadius: BorderRadius.circular(30),
-          //     ),
-          //   ),
+       
         ],
       ),
     );
