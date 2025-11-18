@@ -74,7 +74,7 @@ class _MJPEGStreamScreenState extends State<MJPEGStreamScreen> {
     _subscription?.cancel();
     image.dispose();
     errorState.dispose();
-    showLiveIcon.dispose();
+
     showLodingIndicator.dispose();
     blurSensitiveContent.dispose(); // Dispose blur notifier
     super.dispose();
