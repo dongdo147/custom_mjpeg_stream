@@ -25,6 +25,7 @@ class MJPEGStreamScreen extends StatefulWidget {
   final bool blurSensitiveContent;
 
   final double? borderRadius;
+  final Function(Uint8List)? onFrame;
 
   MJPEGStreamScreen({
     required this.streamUrl,
@@ -41,6 +42,8 @@ class MJPEGStreamScreen extends StatefulWidget {
     this.watermarkWidget,
    
     this.blurSensitiveContent = false,
+    this.onFrame,
+
   });
 
   @override
@@ -148,19 +151,17 @@ class _MJPEGStreamScreenState extends State<MJPEGStreamScreen> {
     if (widget.showLogs) print("Reloading stream...");
     _startStream();
   }
-
 void _sendImage(List<int> chunks) {
-  final List<int>? imageData = preprocessor.process(chunks);
-  if (imageData != null) {
-    // Check if the frame has valid JPEG data
-    if (imageData.length > 10 && imageData[0] == 0xFF && imageData[1] == 0xD8 && imageData.last == 0xD9) {
-      image.value = MemoryImage(Uint8List.fromList(imageData));
-      if (widget.showLogs) print("Image processed and updated.");
-    } else {
-      if (widget.showLogs) print("Invalid JPEG frame detected.");
+    final List<int>? imageData = preprocessor.process(chunks);
+    if (imageData != null && imageData.length > 10 && imageData[0] == 0xFF && imageData[1] == 0xD8 && imageData.last == 0xD9) {
+      final frameBytes = Uint8List.fromList(imageData);
+      image.value = MemoryImage(frameBytes);
+
+      // Gọi callback ra ngoài nếu có
+      widget.onFrame?.call(frameBytes);
     }
   }
-}
+
 
 
   // Toggle blur effect
